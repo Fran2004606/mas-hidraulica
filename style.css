@@ -292,7 +292,7 @@ a{
 .filosofia-card{
     flex: 1;
     
-    
+    border: solid 1px black;
     border-left: 10px solid #81000b;
     padding: 5px;
     background-color: #f9f9f9;
@@ -356,7 +356,7 @@ a{
     flex-direction: column;
     gap: 10px;
     border: solid 2px black;
-    border-radius: 20px;
+    
     border-left: 10px solid #81000b;
     background-color: f9f9f9;
 
@@ -497,7 +497,7 @@ a{
     border-radius: 15px;
     padding: 20px;
 
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 20px;
     
@@ -582,7 +582,7 @@ a{
     align-items: center;
     gap: 15px;
 
-    min-height: 180px;
+    min-height: 275px;
     transition: transform .2s ease;
 }
 
@@ -613,6 +613,7 @@ a{
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .productos-card:hover{
@@ -701,6 +702,8 @@ a{
     }
 
     .filtro{
+        display: none;
+
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -788,6 +791,9 @@ a{
         flex-direction: column;
     }
 
+    .filosofia h2{
+        margin-left: 5px;
+    }
     
 
     .beneficios{
@@ -805,6 +811,8 @@ a{
 
     .filosofia-card{
         width: 90%;
+        margin-left: 14.5px;
+        
     }
 
     
