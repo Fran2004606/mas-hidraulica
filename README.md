@@ -1,2 +1,2 @@
-Pagina para un empresa
-Utilizo lenguajes como HTML5, CSS Y JS 
+Pagina para una empresa
+utilizo lenguajes como HTML5, CSS Y JS 
