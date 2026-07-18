@@ -71,6 +71,7 @@ a{
     align-items: center;
     justify-content: center;
     gap: 6px;
+    margin-right: 30px;
 }
 
 .boton-whatsapp:hover{

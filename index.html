@@ -93,7 +93,7 @@ Productos nacionales e importados. Amplia gama de marcas y precios competitivos.
 
                     </div>
                 <div class="nosotros-imagen">
-                    <img src="img/nosotros/nosotros.png" alt="Imagen sobre nosotros">
+                    <img src="img/nosotros/tractor.png" alt="Imagen sobre nosotros">
                 </div>
 
             </section>
@@ -188,10 +188,11 @@ Productos nacionales e importados. Amplia gama de marcas y precios competitivos.
            
             </section>
 
-
+            
             <section id="modal-productos" class="productos-ocultos">
 
                 <div class="modal">
+
                     <header class="encabezado">
 
                         <div class="titulo-modal">
@@ -200,9 +201,13 @@ Productos nacionales e importados. Amplia gama de marcas y precios competitivos.
                         </div>
 
                         <button class="cerrar" aria-label="Cerrar">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x-mark"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 16l3.644 3.644a1.21 1.21 0 0 0 1.712 0l2.288 -2.288a1.21 1.21 0 0 0 0 -1.712l-3.644 -3.644l3.644 -3.644a1.21 1.21 0 0 0 0 -1.712l-2.288 -2.288a1.21 1.21 0 0 0 -1.712 0l-3.644 3.644l-3.644 -3.644a1.21 1.21 0 0 0 -1.712 0l-2.288 2.288a1.21 1.21 0 0 0 0 1.712l3.644 3.644l-3.644 3.644a1.21 1.21 0 0 0 0 1.712l2.288 2.288a1.21 1.21 0 0 0 1.712 0l3.644 -3.644" /></svg>
-
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-x-mark">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 16l3.644 3.644a1.21 1.21 0 0 0 1.712 0l2.288 -2.288a1.21 1.21 0 0 0 0 -1.712l-3.644 -3.644l3.644 -3.644a1.21 1.21 0 0 0 0 -1.712l-2.288 -2.288a1.21 1.21 0 0 0 -1.712 0l-3.644 3.644l-3.644 -3.644a1.21 1.21 0 0 0 -1.712 0l-2.288 2.288a1.21 1.21 0 0 0 0 1.712l3.644 3.644l-3.644 3.644a1.21 1.21 0 0 0 0 1.712l2.288 2.288a1.21 1.21 0 0 0 1.712 0l3.644 -3.644" />
+                            </svg>
                         </button>
 
                     </header>
@@ -211,7 +216,7 @@ Productos nacionales e importados. Amplia gama de marcas y precios competitivos.
 
                         <aside class="filtro">
 
-                             <h3>Encontrá lo que buscás</h3>
+                            <h3>Encontrá lo que buscás</h3>
 
                             <input 
                                 type="search" 
@@ -219,281 +224,27 @@ Productos nacionales e importados. Amplia gama de marcas y precios competitivos.
                                 placeholder="Buscar producto..."
                             >
 
-                            <div class="grupo-filtro">
-                                <h4>Categorías</h4>
-
-                                <button class="filtro-btn categoria-btn activo-filtro" data-categoria="todos">Todos</button>
-                                <button class="filtro-btn categoria-btn" data-categoria="acoples">Acoples</button>
-                                <button class="filtro-btn categoria-btn" data-categoria="terminales">Terminales</button>
-                                <button class="filtro-btn categoria-btn" data-categoria="mangueras">Mangueras</button>
-                            
-                            </div>
-
-                            <div class="grupo-filtro">
-                                <h4>Medidas</h4>
-
-                                <button class="filtro-btn medida-btn activo-filtro" data-medida="todas">Todas</button>
-                                <button class="filtro-btn medida-btn" data-medida="1/4">1/4"</button>
-                                <button class="filtro-btn medida-btn" data-medida="3/8">3/8"</button>
-                                <button class="filtro-btn medida-btn" data-medida="1/2">1/2"</button>
-                            
-                            </div>
-
-                            <div class="grupo-filtro">
-                                <h4>Marcas</h4>
-
-                              <button class="filtro-btn marca-btn activo-filtro" data-marca="todas">Todas</button>
-                              <button class="filtro-btn marca-btn" data-marca="generico">Genérico</button>
-                            
-                            </div>
-
                             <button id="limpiar-filtros" class="limpiar-filtros">
-                                Limpiar filtros
+                                Limpiar búsqueda
                             </button>
 
                         </aside>
 
-                        <section  class="productos">
+                        <section class="productos" id="contenedor-productos">
 
-                            <article class="productos-card"
-                                
-                                data-nombre="acople rapido"
-                                data-categoria="acoples"
-                                data-medida="1/2"
-                                data-marca="generico">
-
-                                <img src="img/catalogo/acoples1.png" alt="Acople Rapido">
-                                <p>Acoples Rápidos</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            <article class="productos-card"
-                                data-nombre="acople rapido"
-                                data-categoria="acoples"
-                                data-medida="1/2"
-                                data-marca="generico">
-
-                                <img src="img/catalogo/direccioneshidrostaticas.png" alt="Direcciones Hidrostáticas">
-                                <p>Direcciones Hidrostáticas</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-
-                            
-                            </article>
-
-                            <article class="productos-card"
-                                data-nombre="acople rapido"
-                                data-categoria="acoples"
-                                data-medida="1/2"
-                                data-marca="generico">
-
-                                <img src="img/catalogo/motororbital.png" alt="Motores Orbitales">
-                                <p>Motores Orbitales</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                            <img src="img/catalogo/terminales1.png" alt="Terminales y conneciones">
-                                <p>Terminales y Conecciones</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/acopleparabomba.png" alt="Acoples para bomba">
-                                <p>Acoples para bomba</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-
-                                
-                            </article>
-
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/manometro.png" alt="Manómetros Beyca">
-                                <p>Manómetros Beyca</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/sellos.png" alt="Sellos Hidráulicos">
-                                <p>Sellos Hidráulicos</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/cilindros.png" alt="Cilindros Hidráulicos">
-                                <p>Cilindros Hidráulicos</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/accesorios.png" alt="Accesorios para depósitos">
-                                <p>Accesorios para depósitos</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/filtrosh.png" alt="Filtros Hidráulicos">
-                                <p>Filtros Hidráulicos</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/valvulas.png" alt="Válvulas Neumáticas">
-                                <p>Válvulas Neumáticas</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/conecciones.png" alt="Conexiones Neumáticas">
-                                <p>Conexiones Neumáticas</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/mangeras.png" alt="Mangueras alta, media y baja presión">
-                                <p>Mangueras alta, media y baja presión</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                        
                             <p id="sin-resultados" class="sin-resultados">
                                 No encontramos productos con esos filtros.
                             </p>
-                        
-                            
-                            <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/bombapistones.png" alt="Bombas a pistones">
-                                <p>Bombas a pistones</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
-
-                              <article class="productos-card"
-                                data-nombre="terminales conexiones"
-                                data-categoria="terminales"
-                                data-medida=""
-                                data-marca="generico">
-
-                                <img src="img/catalogo/trato.png" alt="mas OPCIONES">
-                                <p>Más opciones</p>
-                                <a href="https://wa.me/5493462661376?text=Hola,%20quisiera%20consultar%20por%20este%20producto" class="boton-producto">
-                                    Consultar
-                                </a>
-                            
-                            </article>
 
                         </section>
 
-                    </div> 
-                </div>       
-            
+                    </div>
+
+                </div>
+
             </section>
+
+            
 
         </main>
 
