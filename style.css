@@ -196,11 +196,11 @@ a{
 }
 
 .beneficio svg{
-    color: #d32525;
+    color: #ff0202;
     width: 28px;
     height: 28px;
     margin-bottom: 15px;
-    border: 2px solid #d32525;
+    border: 2px solid #ff0202;
     border-radius: 10px;
 }
  
@@ -247,7 +247,7 @@ a{
     max-width: 600px;
     border: 2px solid #020202;
     
-    border-left: 10px solid #81000b;
+    border-left: 10px solid #ff0202;
     padding: 20px;
     background-color: #f9f9f9;
     margin-top: 50px;
@@ -294,7 +294,7 @@ a{
     flex: 1;
     
     border: solid 1px black;
-    border-left: 10px solid #81000b;
+    border-left: 10px solid #ff0202;
     padding: 5px;
     background-color: #f9f9f9;
     margin-bottom: 25px;
@@ -358,7 +358,7 @@ a{
     gap: 10px;
     border: solid 2px black;
     
-    border-left: 10px solid #81000b;
+    border-left: 10px solid #ff0202;
     background-color: f9f9f9;
 
     
@@ -565,33 +565,55 @@ a{
 .productos{
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, 220px);
     gap: 20px;
+    justify-content: center;
+    align-items: start;
 
-   
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 
 .productos-card{
+    width: 220px;
+    min-height: 300px;
+
     background: white;
     border-radius: 15px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,.15);
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 
-    min-height: 275px;
     transition: transform .2s ease;
 }
 
 .productos-card img{
     width: 100%;
-    max-width: 180px;
-    height: 120px;
+    height: 130px;
     object-fit: contain;
+}
+
+.nombre-producto{
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    font-weight: bold;
+    margin: 0;
+}
+
+.descripcion-producto{
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
 }
 
 .productos-card p{
@@ -608,13 +630,13 @@ a{
 .boton-producto{
     margin-top: auto;
 
-    padding: 10px 18px;
+    padding: 8px 14px;
     background: #b5000b;
     color: white;
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
-    flex-shrink: 0;
+    font-size: 14px;
 }
 
 .productos-card:hover{
@@ -771,6 +793,7 @@ a{
         width: 100%;
         justify-content: center;
         width: 150px;
+        margin-left: 30px;
         
     }
 
