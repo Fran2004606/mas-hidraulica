@@ -1,18 +1,15 @@
-const botonesAbrirProductos = document.querySelectorAll(".abrir-productos");
+const botonesAbrirProductos = document.querySelectorAll(".abrir-productos, #abrir-productos");
 const modalProductos = document.getElementById("modal-productos");
 const cerrarModal = document.querySelector(".cerrar");
 
 const buscadorProducto = document.getElementById("buscar-producto");
-const tarjetasProductos = document.querySelectorAll(".productos-card");
-const botonesCategoria = document.querySelectorAll(".categoria-btn");
-const botonesMedida = document.querySelectorAll(".medida-btn");
-const botonesMarca = document.querySelectorAll(".marca-btn");
+const contenedorProductos = document.getElementById("contenedor-productos");
 const limpiarFiltros = document.getElementById("limpiar-filtros");
 const sinResultados = document.getElementById("sin-resultados");
 
-let categoriaActual = "todos";
-let medidaActual = "todas";
-let marcaActual = "todas";
+const URL_CATALOGO = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxD4qcQbaNJIIkQA4qzspyeYG_HL1cT_vNKfeGeScnutyZLan4d7L1fzKeawyKrM3s-nLrCFU0xDOV/pub?gid=1131149414&single=true&output=csv";
+
+let productosCatalogo = [];
 
 botonesAbrirProductos.forEach(function(boton){
     boton.addEventListener("click", function(evento){
@@ -35,119 +32,137 @@ modalProductos.addEventListener("click", function(evento){
     }
 });
 
-function aplicarFiltros(){
-    const textoBuscado = buscadorProducto.value.toLowerCase();
+function separarCSV(linea){
+    const columnas = [];
+    let valorActual = "";
+    let dentroDeComillas = false;
 
-    let productosVisibles = 0;
+    for(let i = 0; i < linea.length; i++){
+        const caracter = linea[i];
 
-    tarjetasProductos.forEach(function(tarjeta){
-        const nombreProducto = tarjeta.dataset.nombre.toLowerCase();
-        const categoriaProducto = tarjeta.dataset.categoria;
-        const medidaProducto = tarjeta.dataset.medida;
-        const marcaProducto = tarjeta.dataset.marca;
-
-        const coincideTexto = nombreProducto.includes(textoBuscado);
-        const coincideCategoria = categoriaActual === "todos" || categoriaProducto === categoriaActual;
-        const coincideMedida = medidaActual === "todas" || medidaProducto === medidaActual;
-        const coincideMarca = marcaActual === "todas" || marcaProducto === marcaActual;
-
-        if(coincideTexto && coincideCategoria && coincideMedida && coincideMarca){
-            tarjeta.style.display = "";
-            productosVisibles++;
+        if(caracter === '"'){
+            dentroDeComillas = !dentroDeComillas;
+        } else if(caracter === "," && !dentroDeComillas){
+            columnas.push(valorActual.trim());
+            valorActual = "";
         } else {
-            tarjeta.style.display = "none";
+            valorActual += caracter;
         }
+    }
+
+    columnas.push(valorActual.trim());
+
+    return columnas;
+}
+
+function convertirLinkDrive(url){
+    if(!url){
+        return "";
+    }
+
+    let idImagen = "";
+
+    if(url.includes("id=")){
+        idImagen = url.split("id=")[1].split("&")[0];
+    } else if(url.includes("/d/")){
+        idImagen = url.split("/d/")[1].split("/")[0];
+    }
+
+    if(!idImagen){
+        return url;
+    }
+
+    return `https://drive.google.com/thumbnail?id=${idImagen}&sz=w1000`;
+}
+
+function crearTarjetaProducto(producto){
+    const articulo = document.createElement("article");
+    articulo.classList.add("productos-card");
+
+    const mensajeWhatsapp = `Hola, quisiera consultar por ${producto.nombre}`;
+
+    articulo.innerHTML = `
+        <img src="${producto.imagen}" alt="${producto.nombre}">
+
+        <p class="nombre-producto">${producto.nombre}</p>
+
+        <span class="descripcion-producto">
+            ${producto.descripcion}
+        </span>
+
+        <a 
+            href="https://wa.me/5493462661376?text=${encodeURIComponent(mensajeWhatsapp)}" 
+            class="boton-producto"
+            target="_blank"
+        >
+            Consultar
+        </a>
+    `;
+
+    contenedorProductos.appendChild(articulo);
+}
+
+function mostrarProductos(productos){
+    contenedorProductos.innerHTML = "";
+
+    if(productos.length === 0){
+        contenedorProductos.appendChild(sinResultados);
+        sinResultados.style.display = "block";
+        return;
+    }
+
+    productos.forEach(function(producto){
+        crearTarjetaProducto(producto);
     });
 
-    if(productosVisibles === 0){
-        sinResultados.style.display = "block";
-    } else {
-        sinResultados.style.display = "none";
-    }
+    contenedorProductos.appendChild(sinResultados);
+    sinResultados.style.display = "none";
+}
+
+function cargarCatalogo(){
+    fetch(URL_CATALOGO)
+        .then(function(respuesta){
+            return respuesta.text();
+        })
+        .then(function(datos){
+            const lineas = datos.trim().split("\n");
+
+            productosCatalogo = lineas.slice(1).map(function(linea){
+                const columnas = separarCSV(linea);
+
+                return {
+                    nombre: columnas[1] || "",
+                    descripcion: columnas[2] || "",
+                    imagen: convertirLinkDrive(columnas[3] || ""),
+                    activo: columnas[4] === "TRUE"
+                };
+            }).filter(function(producto){
+                return producto.activo && producto.nombre !== "";
+            });
+
+            mostrarProductos(productosCatalogo);
+        })
+        .catch(function(error){
+            console.log("Error al cargar el catálogo:", error);
+        });
 }
 
 buscadorProducto.addEventListener("input", function(){
-    aplicarFiltros();
-});
+    const textoBuscado = buscadorProducto.value.toLowerCase();
 
-botonesCategoria.forEach(function(boton){
-    boton.addEventListener("click", function(){
+    const productosFiltrados = productosCatalogo.filter(function(producto){
+        const nombre = producto.nombre.toLowerCase();
+        const descripcion = producto.descripcion.toLowerCase();
 
-        botonesCategoria.forEach(function(botonCategoria){
-            botonCategoria.classList.remove("activo-filtro");
-        });
-
-        boton.classList.add("activo-filtro");
-
-        categoriaActual = boton.dataset.categoria;
-
-        aplicarFiltros();
+        return nombre.includes(textoBuscado) || descripcion.includes(textoBuscado);
     });
-});
 
-botonesMedida.forEach(function(boton){
-    boton.addEventListener("click", function(){
-
-        botonesMedida.forEach(function(botonMedida){
-            botonMedida.classList.remove("activo-filtro");
-        });
-
-        boton.classList.add("activo-filtro");
-
-        medidaActual = boton.dataset.medida;
-
-        aplicarFiltros();
-    });
-});
-
-botonesMarca.forEach(function(boton){
-    boton.addEventListener("click", function(){
-
-        botonesMarca.forEach(function(botonMarca){
-            botonMarca.classList.remove("activo-filtro");
-        });
-
-        boton.classList.add("activo-filtro");
-
-        marcaActual = boton.dataset.marca;
-
-        aplicarFiltros();
-    });
+    mostrarProductos(productosFiltrados);
 });
 
 limpiarFiltros.addEventListener("click", function(){
-
     buscadorProducto.value = "";
-
-    categoriaActual = "todos";
-    medidaActual = "todas";
-    marcaActual = "todas";
-
-    botonesCategoria.forEach(function(boton){
-        boton.classList.remove("activo-filtro");
-    });
-
-    botonesMedida.forEach(function(boton){
-        boton.classList.remove("activo-filtro");
-    });
-
-    botonesMarca.forEach(function(boton){
-        boton.classList.remove("activo-filtro");
-    });
-
-    document.querySelector('.categoria-btn[data-categoria="todos"]').classList.add("activo-filtro");
-    document.querySelector('.medida-btn[data-medida="todas"]').classList.add("activo-filtro");
-    document.querySelector('.marca-btn[data-marca="todas"]').classList.add("activo-filtro");
-
-    aplicarFiltros();
+    mostrarProductos(productosCatalogo);
 });
 
-tarjetasProductos.forEach(function(tarjeta){
-    const nombreProducto = tarjeta.querySelector("p").textContent.trim();
-    const botonConsulta = tarjeta.querySelector(".boton-producto");
-
-    const mensaje = `Hola, quisiera consultar por ${nombreProducto}`;
-
-    botonConsulta.href = `https://wa.me/5493462661376?text=${encodeURIComponent(mensaje)}`;
-    botonConsulta.target = "_blank";
-});
+cargarCatalogo();
