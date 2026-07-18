@@ -166,3 +166,21 @@ limpiarFiltros.addEventListener("click", function(){
 });
 
 cargarCatalogo();
+
+const slidesNosotros = document.querySelectorAll(".slide-nosotros");
+
+let slideActual = 0;
+
+function cambiarSlideNosotros(){
+    slidesNosotros[slideActual].classList.remove("activo-slide");
+
+    slideActual++;
+
+    if(slideActual >= slidesNosotros.length){
+        slideActual = 0;
+    }
+
+    slidesNosotros[slideActual].classList.add("activo-slide");
+}
+
+setInterval(cambiarSlideNosotros, 3000);

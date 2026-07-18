@@ -3,7 +3,10 @@
 html{
     scroll-behavior: smooth;
 }
-body{margin: 0;}
+body{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
 .header-principal{
     margin: 0; 
@@ -54,9 +57,11 @@ a{
 }
 
 .logo img{
-    width: 150px;
+    width: 200px;
     height: auto;
     font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
     
 }
 
@@ -221,10 +226,31 @@ a{
     flex: 1;
 }
 
-.nosotros-imagen img{
-    width: 80%;
+.carrusel-nosotros{
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    margin-top: 50px;
     border-radius: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.2);
+}
+
+.slide-nosotros{
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    opacity: 0;
+    transition: opacity .5s ease;
+}
+
+.slide-nosotros.activo-slide{
+    opacity: 1;
 }
 
 .nosotros-contenido h2{
@@ -477,6 +503,9 @@ a{
     justify-content: space-between;
     align-items: center;
 
+
+
+
     padding: 20px;
     border-bottom: 1px solid #ddd;
 }
@@ -486,6 +515,8 @@ a{
     display: flex;
     gap: 20px;
 
+    background-color: rgb(204, 203, 202);
+    border-top: solid 1px black;
     padding: 20px;
     overflow-y: auto;
 }
@@ -842,4 +873,433 @@ a{
     
 
 
+}
+
+
+/* Cambios de la parte de productos  */
+
+.modal{
+    background: #f7f7f7;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0,0,0,.35);
+}
+
+.encabezado{
+    background: white;
+    padding: 24px 28px;
+    border-bottom: 1px solid #ddd;
+    border-top: 6px solid  #ff0202;
+}
+
+.titulo-modal h2{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 30px;
+    color: #1f1f1f;
+    margin-bottom: 8px;
+}
+
+.titulo-modal h2::before{
+    content: "";
+    width: 6px;
+    height: 32px;
+    background: #c40010;
+    border-radius: 4px;
+}
+
+.titulo-modal p{
+    color: #555;
+    font-size: 16px;
+}
+
+.contenido{
+    background: #eeeeee;
+    padding: 28px;
+}
+
+.productos{
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 240px);
+    gap: 24px;
+    justify-content: start;
+    align-items: start;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    width: 100%;
+    padding: 28px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 240px);
+    justify-content: center;
+    align-items: start;
+    align-content: start;
+
+    gap: 28px;
+    background: #f1f1f1;
+}
+
+.productos-card{
+    width: 240px;
+    min-height: 360px;
+
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+
+    box-shadow: 0 8px 22px rgba(0,0,0,.12);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.productos-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.18);
+}
+
+.productos-card img{
+    width: 100%;
+    height: 155px;
+
+    object-fit: contain;
+    background: #f4f4f4;
+    border-radius: 14px;
+    padding: 10px;
+}
+
+.nombre-producto{
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #222;
+    margin: 0;
+}
+
+.descripcion-producto{
+    min-height: 45px;
+
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
+
+}
+
+.boton-producto{
+    margin-top: auto;
+
+    padding: 10px 20px;
+    background: #c40010;
+    color: white;
+
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+
+    transition: background .2s ease, transform .2s ease;
+}
+
+.boton-producto:hover{
+    background: #97000c;
+    transform: scale(1.04);
+}
+
+.cerrar{
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.cerrar:hover{
+    background: #c40010;
+    color: white;
+    border-color: #c40010;
+}
+
+.cerrar svg{
+margin-top: 1px;
+}
+
+
+/* Pagina para notebooks */
+
+
+@media (min-width: 901px) and (max-width: 1366px){
+
+    html,
+    body{
+        overflow-x: hidden;
+    }
+
+    /* HEADER */
+
+    .header-principal{
+        padding: 8px 28px;
+        gap: 20px;
+    }
+
+    .logo img{
+        width: 95px;
+    }
+
+    nav{
+        gap: 22px;
+    }
+
+    nav a{
+        font-size: 1rem;
+    }
+
+    .boton-whatsapp{
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        gap: 8px;
+    }
+
+    .boton-whatsapp svg{
+        width: 20px;
+        height: 20px;
+    }
+
+    main{
+        padding-top: 110px;
+    }
+
+    /* HERO */
+
+    .hero{
+        min-height: 520px;
+        padding: 60px 50px;
+    }
+
+    .hero-contenido{
+        max-width: 560px;
+    }
+
+    .hero h1{
+        font-size: 2.5rem;
+        line-height: 1.15;
+    }
+
+    .hero p{
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .hero-botones{
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .boton-principal,
+    .boton-secundario{
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+
+    /* BENEFICIOS */
+
+    .beneficios{
+        padding: 55px 40px;
+        gap: 25px;
+    }
+
+    .beneficios article{
+        max-width: 280px;
+        padding: 22px;
+    }
+
+    .beneficios h3{
+        font-size: 1.15rem;
+    }
+
+    .beneficios p{
+        font-size: 0.95rem;
+    }
+
+    /* NOSOTROS */
+
+    .nosotros{
+        padding: 60px 45px;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .nosotros-contenido{
+        max-width: 520px;
+        padding: 22px;
+        margin-top: 35px;
+    }
+
+    .nosotros-contenido h2{
+        font-size: 1.8rem;
+    }
+
+    .nosotros-contenido p{
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .carrusel-nosotros{
+        max-width: 520px;
+        height: 360px;
+        margin-top: 35px;
+    }
+
+    /* FILOSOFÍA */
+
+    .filosofia{
+        padding: 55px 40px;
+        gap: 24px;
+    }
+
+    .filosofia article{
+        max-width: 300px;
+        padding: 24px;
+    }
+
+    .filosofia h3{
+        font-size: 1.2rem;
+    }
+
+    .filosofia p{
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* CONTACTO */
+
+    .contacto{
+        padding: 60px 45px;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .contactoinfo{
+        max-width: 430px;
+    }
+
+    .contactoinfo h2{
+        font-size: 1.8rem;
+    }
+
+    .contactoinfo p{
+        font-size: 1rem;
+    }
+
+    .contacto-item{
+        font-size: 0.95rem;
+    }
+
+    .contacto-redes img{
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+    }
+
+    .mapa iframe{
+        width: 520px;
+        height: 360px;
+    }
+
+    /* FOOTER */
+
+    .footer{
+        padding: 25px 40px;
+        font-size: 0.95rem;
+    }
+
+    /* MODAL PRODUCTOS */
+
+    .modal{
+        width: 92%;
+        max-width: 1150px;
+        height: 88vh;
+    }
+
+    .encabezado{
+        padding: 18px 24px;
+    }
+
+    .titulo-modal h2{
+        font-size: 26px;
+    }
+
+    .titulo-modal p{
+        font-size: 14px;
+    }
+
+    .contenido{
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .filtro{
+        width: 240px;
+        padding: 18px;
+    }
+
+    .filtro h3{
+        font-size: 18px;
+    }
+
+    .filtro input{
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .limpiar-filtros{
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .productos{
+        grid-template-columns: repeat(auto-fill, 220px);
+        gap: 20px;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .productos-card{
+        width: 220px;
+        min-height: 330px;
+        padding: 16px;
+    }
+
+    .productos-card img{
+        height: 135px;
+    }
+
+    .nombre-producto{
+        font-size: 16px;
+    }
+
+    .descripcion-producto{
+        font-size: 13px;
+        min-height: 45px;
+    }
+
+    .boton-producto{
+        padding: 9px 16px;
+        font-size: 14px;
+    }
 }
