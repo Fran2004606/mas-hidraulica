@@ -9,6 +9,15 @@ const sinResultados = document.getElementById("sin-resultados");
 
 const URL_CATALOGO = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxD4qcQbaNJIIkQA4qzspyeYG_HL1cT_vNKfeGeScnutyZLan4d7L1fzKeawyKrM3s-nLrCFU0xDOV/pub?gid=1131149414&single=true&output=csv";
 
+const detalleProducto = document.getElementById("detalle-producto");
+const cerrarDetalle = document.getElementById("cerrar-detalle");
+
+const detalleNombre = document.getElementById("detalle-nombre");
+const detalleDescripcion = document.getElementById("detalle-descripcion");
+const detalleImagen = document.getElementById("detalle-imagen");
+const detalleConsultar = document.getElementById("detalle-consultar");
+
+
 let productosCatalogo = [];
 
 botonesAbrirProductos.forEach(function(boton){
@@ -32,27 +41,72 @@ modalProductos.addEventListener("click", function(evento){
     }
 });
 
-function separarCSV(linea){
-    const columnas = [];
+function separarCSV(texto){
+    const filas = [];
+
+    let filaActual = [];
     let valorActual = "";
     let dentroDeComillas = false;
 
-    for(let i = 0; i < linea.length; i++){
-        const caracter = linea[i];
+    for(let i = 0; i < texto.length; i++){
+        const caracter = texto[i];
+        const siguiente = texto[i + 1];
 
         if(caracter === '"'){
-            dentroDeComillas = !dentroDeComillas;
+
+            if(dentroDeComillas && siguiente === '"'){
+                valorActual += '"';
+                i++;
+            } else {
+                dentroDeComillas = !dentroDeComillas;
+            }
+
         } else if(caracter === "," && !dentroDeComillas){
-            columnas.push(valorActual.trim());
+
+            filaActual.push(valorActual.trim());
             valorActual = "";
+
+        } else if(
+            (caracter === "\n" || caracter === "\r") &&
+            !dentroDeComillas
+        ){
+
+            if(caracter === "\r" && siguiente === "\n"){
+                i++;
+            }
+
+            filaActual.push(valorActual.trim());
+            valorActual = "";
+
+            const filaTieneContenido = filaActual.some(function(valor){
+                return valor !== "";
+            });
+
+            if(filaTieneContenido){
+                filas.push(filaActual);
+            }
+
+            filaActual = [];
+
         } else {
             valorActual += caracter;
         }
     }
 
-    columnas.push(valorActual.trim());
+    if(valorActual !== "" || filaActual.length > 0){
 
-    return columnas;
+        filaActual.push(valorActual.trim());
+
+        const filaTieneContenido = filaActual.some(function(valor){
+            return valor !== "";
+        });
+
+        if(filaTieneContenido){
+            filas.push(filaActual);
+        }
+    }
+
+    return filas;
 }
 
 function convertirLinkDrive(url){
@@ -75,39 +129,88 @@ function convertirLinkDrive(url){
     return `https://drive.google.com/thumbnail?id=${idImagen}&sz=w1000`;
 }
 
+
+function abrirDetalleProducto(producto){
+
+    if(
+        !detalleProducto ||
+        !detalleNombre ||
+        !detalleDescripcion ||
+        !detalleImagen ||
+        !detalleConsultar
+    ){
+        console.error("Faltan elementos del detalle de producto en el HTML");
+        return;
+    }
+
+    detalleNombre.textContent = producto.nombre;
+    detalleDescripcion.textContent = producto.descripcion;
+
+    detalleImagen.src = producto.imagen;
+    detalleImagen.alt = producto.nombre;
+
+    const mensajeWhatsapp =
+        `Hola, quisiera consultar por ${producto.nombre}`;
+
+    detalleConsultar.href =
+        `https://wa.me/5493462661376?text=${encodeURIComponent(mensajeWhatsapp)}`;
+
+    detalleProducto.classList.add("abierto");
+    detalleProducto.setAttribute("aria-hidden", "false");
+}
+
+function cerrarDetalleProducto(){
+
+    detalleProducto.classList.remove("abierto");
+    detalleProducto.setAttribute("aria-hidden", "true");
+
+    detalleImagen.src = "";
+}
+
+if(cerrarDetalle){
+    cerrarDetalle.addEventListener("click", function(){
+        cerrarDetalleProducto();
+    });
+}
+
 function crearTarjetaProducto(producto){
+
     const articulo = document.createElement("article");
     articulo.classList.add("productos-card");
 
-    const mensajeWhatsapp = `Hola, quisiera consultar por ${producto.nombre}`;
+    const imagen = document.createElement("img");
+    imagen.src = producto.imagen;
+    imagen.alt = producto.nombre;
 
-    articulo.innerHTML = `
-        <img src="${producto.imagen}" alt="${producto.nombre}">
+    const nombre = document.createElement("p");
+    nombre.classList.add("nombre-producto");
+    nombre.textContent = producto.nombre;
 
-        <p class="nombre-producto">${producto.nombre}</p>
+    const botonVer = document.createElement("button");
+    botonVer.type = "button";
+    botonVer.classList.add("ver-producto");
+    botonVer.textContent = "Ver producto";
 
-        <span class="descripcion-producto">
-            ${producto.descripcion}
-        </span>
+    botonVer.addEventListener("click", function(){
+        abrirDetalleProducto(producto);
+    });
 
-        <a 
-            href="https://wa.me/5493462661376?text=${encodeURIComponent(mensajeWhatsapp)}" 
-            class="boton-producto"
-            target="_blank"
-        >
-            Consultar
-        </a>
-    `;
+    articulo.appendChild(imagen);
+    articulo.appendChild(nombre);
+    articulo.appendChild(botonVer);
 
     contenedorProductos.appendChild(articulo);
 }
 
 function mostrarProductos(productos){
+
     contenedorProductos.innerHTML = "";
 
     if(productos.length === 0){
-        contenedorProductos.appendChild(sinResultados);
+
         sinResultados.style.display = "block";
+        contenedorProductos.appendChild(sinResultados);
+
         return;
     }
 
@@ -115,35 +218,99 @@ function mostrarProductos(productos){
         crearTarjetaProducto(producto);
     });
 
-    contenedorProductos.appendChild(sinResultados);
     sinResultados.style.display = "none";
+    contenedorProductos.appendChild(sinResultados);
 }
 
 function cargarCatalogo(){
+
     fetch(URL_CATALOGO)
         .then(function(respuesta){
+
+            if(!respuesta.ok){
+                throw new Error("No se pudo cargar la planilla");
+            }
+
             return respuesta.text();
         })
         .then(function(datos){
-            const lineas = datos.trim().split("\n");
 
-            productosCatalogo = lineas.slice(1).map(function(linea){
-                const columnas = separarCSV(linea);
+            const filas = separarCSV(datos);
 
-                return {
-                    nombre: columnas[1] || "",
-                    descripcion: columnas[2] || "",
-                    imagen: convertirLinkDrive(columnas[3] || ""),
-                    activo: columnas[4] === "TRUE"
-                };
-            }).filter(function(producto){
-                return producto.activo && producto.nombre !== "";
+            if(filas.length === 0){
+                mostrarProductos([]);
+                return;
+            }
+
+            const encabezados = filas[0].map(function(encabezado){
+                return encabezado.trim().toLowerCase();
             });
+
+            const indiceNombre =
+                encabezados.indexOf("nombre del producto");
+
+            const indiceDescripcion =
+                encabezados.indexOf("descripción breve");
+
+            const indiceImagen =
+                encabezados.indexOf("foto del producto");
+
+            const indiceActivo =
+                encabezados.indexOf("activo");
+
+            if(
+                indiceNombre === -1 ||
+                indiceDescripcion === -1 ||
+                indiceImagen === -1 ||
+                indiceActivo === -1
+            ){
+                throw new Error(
+                    "No se encontraron las columnas necesarias en la planilla"
+                );
+            }
+
+            productosCatalogo = filas
+                .slice(1)
+                .map(function(columnas){
+
+                    const valorActivo =
+                        String(columnas[indiceActivo] || "")
+                            .trim()
+                            .toUpperCase();
+
+                    return {
+                        nombre: columnas[indiceNombre] || "",
+
+                        descripcion:
+                            columnas[indiceDescripcion] || "",
+
+                        imagen: convertirLinkDrive(
+                            columnas[indiceImagen] || ""
+                        ),
+
+                        activo:
+                            valorActivo === "TRUE" ||
+                            valorActivo === "VERDADERO"
+                    };
+                })
+                .filter(function(producto){
+
+                    return (
+                        producto.activo &&
+                        producto.nombre.trim() !== ""
+                    );
+                });
 
             mostrarProductos(productosCatalogo);
         })
         .catch(function(error){
-            console.log("Error al cargar el catálogo:", error);
+
+            console.error(
+                "Error al cargar el catálogo:",
+                error
+            );
+
+            mostrarProductos([]);
         });
 }
 
