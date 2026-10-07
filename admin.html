@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Panel - Mas Hidráulica</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        [hidden]{display:none !important}
+        body{background:#ececeb;color:#111;font-family:Arial,Helvetica,sans-serif;padding:32px 16px}
+        h1{font-size:1.6rem}
+        h2{font-size:1.2rem;margin-bottom:4px}
+        .caja{width:min(100%,900px);margin:0 auto 24px;padding:24px;display:flex;flex-direction:column;gap:12px;background:#fff;border-left:10px solid #ff0202;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+        #login{width:min(100%,380px);margin-top:10vh}
+        input,textarea{width:100%;padding:11px 12px;font:inherit;border:1px solid #c7c7c7;border-radius:8px}
+        input[type="checkbox"]{width:auto}
+        label{display:flex;align-items:center;gap:8px}
+        button{padding:10px 16px;color:#fff;background:#c40010;border:0;border-radius:8px;font:inherit;font-weight:700;cursor:pointer}
+        button:hover{background:#a8000d}
+        button:disabled{opacity:.6;cursor:wait}
+        #cancelar,#salir{background:#333}
+        .fila{display:flex;gap:10px}
+        .barra{width:min(100%,900px);margin:0 auto 24px;display:flex;justify-content:space-between;align-items:center}
+        .error{color:#c40010}
+        table{border-collapse:collapse;display:table}
+        td{padding:10px 8px;border-bottom:1px solid #d7d7d7;vertical-align:middle}
+        td img{width:56px;height:56px;object-fit:contain}
+        td:last-child{display:flex;gap:6px;flex-wrap:wrap}
+    </style>
+</head>
+<body>
+
+    <section id="login" class="caja">
+        <h1>Ingresar</h1>
+        <input type="email" id="email" placeholder="Email" autocomplete="username">
+        <input type="password" id="clave" placeholder="Contraseña" autocomplete="current-password">
+        <button type="button" id="entrar">Entrar</button>
+        <p id="error-login" class="error"></p>
+    </section>
+
+    <section id="panel" hidden>
+
+        <div class="barra">
+            <h1>Panel de productos</h1>
+            <button type="button" id="salir">Cerrar sesión</button>
+        </div>
+
+        <form id="formulario" class="caja">
+            <h2 id="titulo-form">Nuevo producto</h2>
+            <input type="text" id="nombre" placeholder="Nombre del producto" required>
+            <textarea id="descripcion" rows="4" placeholder="Descripción"></textarea>
+            <input type="file" id="foto" accept="image/*">
+            <label><input type="checkbox" id="activo" checked> Visible en la web</label>
+            <div class="fila">
+                <button type="submit" id="guardar">Guardar</button>
+                <button type="button" id="cancelar" hidden>Cancelar</button>
+            </div>
+            <p id="mensaje"></p>
+        </form>
+
+        <table class="caja">
+            <tbody id="lista"></tbody>
+        </table>
+
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://nniletbqllbxmnplmgty.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_MdLdxiIXTwOwsr4DYI91mw_JZjKuzAF";
+
+        const cliente = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const login = document.getElementById("login");
+        const panel = document.getElementById("panel");
+        const email = document.getElementById("email");
+        const clave = document.getElementById("clave");
+        const entrar = document.getElementById("entrar");
+        const salir = document.getElementById("salir");
+        const errorLogin = document.getElementById("error-login");
+
+        const formulario = document.getElementById("formulario");
+        const tituloForm = document.getElementById("titulo-form");
+        const nombre = document.getElementById("nombre");
+        const descripcion = document.getElementById("descripcion");
+        const foto = document.getElementById("foto");
+        const activo = document.getElementById("activo");
+        const guardar = document.getElementById("guardar");
+        const cancelar = document.getElementById("cancelar");
+        const mensaje = document.getElementById("mensaje");
+        const lista = document.getElementById("lista");
+
+        let editando = null;
+
+        function mostrarVista(haySesion){
+            login.hidden = haySesion;
+            panel.hidden = !haySesion;
+
+            if(haySesion){
+                cargarLista();
+            }
+        }
+
+        async function iniciar(){
+            const resultado = await cliente.auth.getSession();
+            mostrarVista(Boolean(resultado.data.session));
+        }
+
+        entrar.addEventListener("click", async function(){
+            const resultado = await cliente.auth.signInWithPassword({
+                email: email.value.trim(),
+                password: clave.value
+            });
+
+            if(resultado.error){
+                errorLogin.textContent = "Email o contraseña incorrectos";
+                return;
+            }
+
+            errorLogin.textContent = "";
+            clave.value = "";
+            mostrarVista(true);
+        });
+
+        clave.addEventListener("keydown", function(evento){
+            if(evento.key === "Enter"){
+                entrar.click();
+            }
+        });
+
+        salir.addEventListener("click", async function(){
+            await cliente.auth.signOut();
+            mostrarVista(false);
+        });
+
+        function rutaDeFoto(url){
+            const partes = (url || "").split("/productos/");
+            return partes.length > 1 ? partes[1] : null;
+        }
+
+        async function subirFoto(archivo){
+            const limpio = archivo.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
+            const ruta = Date.now() + "-" + limpio;
+
+            const resultado = await cliente.storage
+                .from("productos")
+                .upload(ruta, archivo);
+
+            if(resultado.error){
+                throw resultado.error;
+            }
+
+            return cliente.storage
+                .from("productos")
+                .getPublicUrl(ruta).data.publicUrl;
+        }
+
+        function limpiarFormulario(){
+            formulario.reset();
+            editando = null;
+            tituloForm.textContent = "Nuevo producto";
+            cancelar.hidden = true;
+        }
+
+        function cargarEnFormulario(producto){
+            editando = producto;
+
+            nombre.value = producto.nombre;
+            descripcion.value = producto.descripcion || "";
+            activo.checked = producto.activo;
+            foto.value = "";
+
+            tituloForm.textContent = "Editando: " + producto.nombre;
+            cancelar.hidden = false;
+            mensaje.textContent = "";
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        cancelar.addEventListener("click", limpiarFormulario);
+
+        formulario.addEventListener("submit", async function(evento){
+            evento.preventDefault();
+
+            guardar.disabled = true;
+            mensaje.textContent = "Guardando...";
+
+            try{
+                const datos = {
+                    nombre: nombre.value.trim(),
+                    descripcion: descripcion.value.trim(),
+                    activo: activo.checked
+                };
+
+                const archivo = foto.files[0];
+
+                if(archivo){
+                    datos.imagen = await subirFoto(archivo);
+                }
+
+                let resultado;
+
+                if(editando){
+                    resultado = await cliente
+                        .from("productos")
+                        .update(datos)
+                        .eq("id", editando.id);
+
+                    const rutaVieja = rutaDeFoto(editando.imagen);
+
+                    if(archivo && rutaVieja && !resultado.error){
+                        await cliente.storage.from("productos").remove([rutaVieja]);
+                    }
+                } else {
+                    resultado = await cliente
+                        .from("productos")
+                        .insert(datos);
+                }
+
+                if(resultado.error){
+                    throw resultado.error;
+                }
+
+                limpiarFormulario();
+                mensaje.textContent = "Guardado";
+                cargarLista();
+
+            } catch(error){
+                console.error(error);
+                mensaje.textContent = "No se pudo guardar";
+            }
+
+            guardar.disabled = false;
+        });
+
+        function crearBoton(texto, accion){
+            const boton = document.createElement("button");
+            boton.type = "button";
+            boton.textContent = texto;
+            boton.addEventListener("click", accion);
+            return boton;
+        }
+
+        async function eliminarProducto(producto){
+
+            if(!confirm("¿Eliminar " + producto.nombre + "?")){
+                return;
+            }
+
+            const resultado = await cliente
+                .from("productos")
+                .delete()
+                .eq("id", producto.id);
+
+            if(resultado.error){
+                mensaje.textContent = "No se pudo eliminar";
+                return;
+            }
+
+            const ruta = rutaDeFoto(producto.imagen);
+
+            if(ruta){
+                await cliente.storage.from("productos").remove([ruta]);
+            }
+
+            if(editando && editando.id === producto.id){
+                limpiarFormulario();
+            }
+
+            cargarLista();
+        }
+
+        function crearFila(producto){
+
+            const fila = document.createElement("tr");
+
+            const celdaFoto = document.createElement("td");
+            const imagen = document.createElement("img");
+            imagen.src = producto.imagen || "";
+            imagen.alt = producto.nombre;
+            celdaFoto.appendChild(imagen);
+
+            const celdaNombre = document.createElement("td");
+            celdaNombre.textContent = producto.nombre;
+
+            const celdaEstado = document.createElement("td");
+            celdaEstado.textContent = producto.activo ? "Visible" : "Oculto";
+
+            const celdaAcciones = document.createElement("td");
+
+            celdaAcciones.append(
+                crearBoton("Editar", function(){
+                    cargarEnFormulario(producto);
+                }),
+                crearBoton(producto.activo ? "Ocultar" : "Mostrar", async function(){
+                    await cliente
+                        .from("productos")
+                        .update({ activo: !producto.activo })
+                        .eq("id", producto.id);
+
+                    cargarLista();
+                }),
+                crearBoton("Eliminar", function(){
+                    eliminarProducto(producto);
+                })
+            );
+
+            fila.append(celdaFoto, celdaNombre, celdaEstado, celdaAcciones);
+
+            return fila;
+        }
+
+        async function cargarLista(){
+
+            const resultado = await cliente
+                .from("productos")
+                .select("*")
+                .order("nombre");
+
+            lista.innerHTML = "";
+
+            if(resultado.error){
+                mensaje.textContent = "No se pudo cargar la lista";
+                return;
+            }
+
+            resultado.data.forEach(function(producto){
+                lista.appendChild(crearFila(producto));
+            });
+        }
+
+        iniciar();
+    </script>
+
+</body>
+</html>

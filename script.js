@@ -1,4 +1,4 @@
-const botonesAbrirProductos = document.querySelectorAll(".abrir-productos, #abrir-productos");
+const botonesAbrirProductos = document.querySelectorAll(".abrir-productos");
 const modalProductos = document.getElementById("modal-productos");
 const cerrarModal = document.querySelector(".cerrar");
 
@@ -7,7 +7,10 @@ const contenedorProductos = document.getElementById("contenedor-productos");
 const limpiarFiltros = document.getElementById("limpiar-filtros");
 const sinResultados = document.getElementById("sin-resultados");
 
-const URL_CATALOGO = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxD4qcQbaNJIIkQA4qzspyeYG_HL1cT_vNKfeGeScnutyZLan4d7L1fzKeawyKrM3s-nLrCFU0xDOV/pub?gid=1131149414&single=true&output=csv";
+const SUPABASE_URL = "https://nniletbqllbxmnplmgty.supabase.co";
+const SUPABASE_KEY = "sb_publishable_MdLdxiIXTwOwsr4DYI91mw_JZjKuzAF";
+
+const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const detalleProducto = document.getElementById("detalle-producto");
 const cerrarDetalle = document.getElementById("cerrar-detalle");
@@ -40,94 +43,6 @@ modalProductos.addEventListener("click", function(evento){
         document.body.style.overflow = "";
     }
 });
-
-function separarCSV(texto){
-    const filas = [];
-
-    let filaActual = [];
-    let valorActual = "";
-    let dentroDeComillas = false;
-
-    for(let i = 0; i < texto.length; i++){
-        const caracter = texto[i];
-        const siguiente = texto[i + 1];
-
-        if(caracter === '"'){
-
-            if(dentroDeComillas && siguiente === '"'){
-                valorActual += '"';
-                i++;
-            } else {
-                dentroDeComillas = !dentroDeComillas;
-            }
-
-        } else if(caracter === "," && !dentroDeComillas){
-
-            filaActual.push(valorActual.trim());
-            valorActual = "";
-
-        } else if(
-            (caracter === "\n" || caracter === "\r") &&
-            !dentroDeComillas
-        ){
-
-            if(caracter === "\r" && siguiente === "\n"){
-                i++;
-            }
-
-            filaActual.push(valorActual.trim());
-            valorActual = "";
-
-            const filaTieneContenido = filaActual.some(function(valor){
-                return valor !== "";
-            });
-
-            if(filaTieneContenido){
-                filas.push(filaActual);
-            }
-
-            filaActual = [];
-
-        } else {
-            valorActual += caracter;
-        }
-    }
-
-    if(valorActual !== "" || filaActual.length > 0){
-
-        filaActual.push(valorActual.trim());
-
-        const filaTieneContenido = filaActual.some(function(valor){
-            return valor !== "";
-        });
-
-        if(filaTieneContenido){
-            filas.push(filaActual);
-        }
-    }
-
-    return filas;
-}
-
-function convertirLinkDrive(url){
-    if(!url){
-        return "";
-    }
-
-    let idImagen = "";
-
-    if(url.includes("id=")){
-        idImagen = url.split("id=")[1].split("&")[0];
-    } else if(url.includes("/d/")){
-        idImagen = url.split("/d/")[1].split("/")[0];
-    }
-
-    if(!idImagen){
-        return url;
-    }
-
-    return `https://drive.google.com/thumbnail?id=${idImagen}&sz=w1000`;
-}
 
 
 function abrirDetalleProducto(producto){
@@ -224,81 +139,27 @@ function mostrarProductos(productos){
 
 function cargarCatalogo(){
 
-    fetch(URL_CATALOGO)
-        .then(function(respuesta){
+    clienteSupabase
+        .from("productos")
+        .select("nombre, descripcion, imagen")
+        .eq("activo", true)
+        .order("nombre")
+        .then(function(resultado){
 
-            if(!respuesta.ok){
-                throw new Error("No se pudo cargar la planilla");
+            if(resultado.error){
+                throw resultado.error;
             }
 
-            return respuesta.text();
-        })
-        .then(function(datos){
-
-            const filas = separarCSV(datos);
-
-            if(filas.length === 0){
-                mostrarProductos([]);
-                return;
-            }
-
-            const encabezados = filas[0].map(function(encabezado){
-                return encabezado.trim().toLowerCase();
-            });
-
-            const indiceNombre =
-                encabezados.indexOf("nombre del producto");
-
-            const indiceDescripcion =
-                encabezados.indexOf("descripción breve");
-
-            const indiceImagen =
-                encabezados.indexOf("foto del producto");
-
-            const indiceActivo =
-                encabezados.indexOf("activo");
-
-            if(
-                indiceNombre === -1 ||
-                indiceDescripcion === -1 ||
-                indiceImagen === -1 ||
-                indiceActivo === -1
-            ){
-                throw new Error(
-                    "No se encontraron las columnas necesarias en la planilla"
-                );
-            }
-
-            productosCatalogo = filas
-                .slice(1)
-                .map(function(columnas){
-
-                    const valorActivo =
-                        String(columnas[indiceActivo] || "")
-                            .trim()
-                            .toUpperCase();
-
+            productosCatalogo = (resultado.data || [])
+                .map(function(fila){
                     return {
-                        nombre: columnas[indiceNombre] || "",
-
-                        descripcion:
-                            columnas[indiceDescripcion] || "",
-
-                        imagen: convertirLinkDrive(
-                            columnas[indiceImagen] || ""
-                        ),
-
-                        activo:
-                            valorActivo === "TRUE" ||
-                            valorActivo === "VERDADERO"
+                        nombre: fila.nombre || "",
+                        descripcion: fila.descripcion || "",
+                        imagen: fila.imagen || ""
                     };
                 })
                 .filter(function(producto){
-
-                    return (
-                        producto.activo &&
-                        producto.nombre.trim() !== ""
-                    );
+                    return producto.nombre.trim() !== "";
                 });
 
             mostrarProductos(productosCatalogo);
